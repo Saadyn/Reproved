@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>REPROVADO — Bíblia do Jogo</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=VT323&display=swap');
+
+  :root {
+    --bg: #0a0a08;
+    --bg2: #0f0f0c;
+    --panel: #111109;
+    --border: #2a2a1a;
+    --red: #c0392b;
+    --red-dim: #7a1f18;
+    --amber: #d4a017;
+    --amber-dim: #7a5a0a;
+    --green: #3a7a2a;
+    --green-bright: #5ab040;
+    --text: #c8c2a8;
+    --text-dim: #6b6555;
+    --text-bright: #e8e0c0;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Courier Prime', monospace;
+    font-size: 15px;
+    line-height: 1.75;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(0deg, rgba(0,0,0,0.13) 0px, rgba(0,0,0,0.13) 1px, transparent 1px, transparent 3px);
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.45;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.72) 100%);
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  .wrapper { max-width: 900px; margin: 0 auto; padding: 40px 32px 80px; }
+
+  .header {
+    text-align: center;
+    padding: 60px 0 48px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 56px;
+  }
+
+  .header::before {
+    content: '■ LETHE CORP. — DOCUMENTO INTERNO — CLASSIFICADO ■';
+    display: block;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--text-dim);
+    margin-bottom: 28px;
+  }
+
+  .title {
+    font-family: 'VT323', monospace;
+    font-size: 100px;
+    line-height: 0.85;
+    color: var(--red);
+    text-shadow: 3px 3px 0 var(--red-dim), 0 0 40px rgba(192,57,43,0.4), 0 0 80px rgba(192,57,43,0.15);
+    letter-spacing: 6px;
+    animation: flicker 8s infinite;
+  }
+
+  .title-sub {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 14px;
+    letter-spacing: 6px;
+    color: var(--amber-dim);
+    margin-top: 14px;
+  }
+
+  .header-meta {
+    margin-top: 28px;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 24px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+
+  .header-meta span::before { content: '▸ '; color: var(--red-dim); }
+
+  @keyframes flicker {
+    0%,92%,94%,96%,100%{opacity:1} 93%{opacity:0.8} 95%{opacity:0.55}
+  }
+
+  /* ══════════ CRT TV ══════════ */
+  .crt-wrap { margin: 28px 0; display: flex; justify-content: center; }
+  .crt-wrap.full { display: block; }
+
+  .crt-tv {
+    position: relative;
+    display: inline-block;
+    background: linear-gradient(145deg, #221e14, #1a1610, #141210);
+    border-radius: 20px 20px 16px 16px;
+    padding: 16px 18px 36px;
+    box-shadow:
+      0 0 0 2px #2e2818,
+      0 0 0 5px #1a1610,
+      0 0 0 7px #252018,
+      inset 0 0 20px rgba(0,0,0,0.7),
+      0 10px 40px rgba(0,0,0,0.85),
+      0 0 80px rgba(0,0,0,0.4);
+  }
+
+  .crt-tv.wide { width: 100%; display: block; }
+  .crt-tv.medium { max-width: 580px; width: 100%; }
+  .crt-tv.small { max-width: 400px; }
+
+  /* Right-side control buttons */
+  .crt-tv::before {
+    content: '';
+    position: absolute;
+    right: -16px;
+    top: 40%;
+    transform: translateY(-50%);
+    width: 13px;
+    height: 56px;
+    background: linear-gradient(180deg, #2e2818 0%, #3a3020 50%, #1a1208 100%);
+    border-radius: 0 6px 6px 0;
+    box-shadow: 2px 0 6px rgba(0,0,0,0.5);
+  }
+
+  /* Speaker dots at bottom */
+  .crt-tv::after {
+    content: '· · · · · · · · ·';
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 9px;
+    letter-spacing: 4px;
+    color: #322a18;
+    white-space: nowrap;
+  }
+
+  .crt-screen {
+    position: relative;
+    overflow: hidden;
+    border-radius: 10px 10px 8px 8px;
+    background: #000508;
+    box-shadow:
+      inset 0 0 40px rgba(0,0,0,0.95),
+      inset 0 0 3px rgba(0,60,20,0.2),
+      0 0 8px rgba(0,0,0,0.8);
+  }
+
+  /* Glass reflection */
+  .crt-screen::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background:
+      radial-gradient(ellipse at 28% 22%, rgba(255,255,255,0.07) 0%, transparent 55%),
+      radial-gradient(ellipse at 75% 80%, rgba(0,0,0,0.3) 0%, transparent 40%);
+    z-index: 10;
+    pointer-events: none;
+    border-radius: inherit;
+  }
+
+  /* Scanlines */
+  .crt-screen::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(0,0,0,0.22) 0px, rgba(0,0,0,0.22) 1px,
+      transparent 1px, transparent 2px
+    );
+    z-index: 9;
+    pointer-events: none;
+  }
+
+  .crt-screen img {
+    display: block;
+    width: 100%;
+    height: auto;
+    filter: saturate(0.72) brightness(0.85) contrast(1.12);
+    border-radius: 8px 8px 6px 6px;
+  }
+
+  .crt-screen.green-tint img {
+    filter: saturate(0.25) brightness(0.82) contrast(1.18) sepia(0.5) hue-rotate(90deg);
+  }
+
+  .crt-screen.amber-tint img {
+    filter: saturate(0.45) brightness(0.80) contrast(1.12) sepia(0.65);
+  }
+
+  /* Noise grain */
+  .crt-static {
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.07'/%3E%3C/svg%3E");
+    z-index: 8;
+    pointer-events: none;
+    border-radius: inherit;
+    mix-blend-mode: overlay;
+  }
+
+  .crt-label {
+    margin-top: 10px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: #3e3422;
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  /* Layout helpers */
+  .crt-duo { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 28px 0; }
+  .crt-duo .crt-tv { width: 100%; display: block; }
+
+  .crt-trio { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin: 28px 0; }
+  .crt-trio .crt-tv { width: 100%; display: block; }
+
+  /* ══════════ SECTIONS ══════════ */
+  .section { margin-bottom: 56px; }
+
+  .section-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px; letter-spacing: 4px;
+    color: var(--text-dim); text-transform: uppercase; margin-bottom: 6px;
+  }
+
+  h2 { font-family: 'VT323', monospace; font-size: 40px; color: var(--amber); letter-spacing: 2px; line-height: 1; margin-bottom: 20px; text-shadow: 0 0 20px rgba(212,160,23,0.25); }
+  h3 { font-family: 'Share Tech Mono', monospace; font-size: 13px; color: var(--green-bright); letter-spacing: 2px; text-transform: uppercase; margin: 28px 0 10px; padding-left: 12px; border-left: 3px solid var(--green); }
+
+  p { margin-bottom: 12px; }
+  strong { color: var(--text-bright); font-weight: 700; }
+  em { color: var(--amber-dim); font-style: italic; }
+
+  .panel { background: var(--panel); border: 1px solid var(--border); border-left: 3px solid var(--red-dim); padding: 20px 24px; margin: 16px 0; position: relative; }
+  .panel::before { content: attr(data-label); position: absolute; top: -9px; left: 12px; background: var(--panel); padding: 0 8px; font-family: 'Share Tech Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--red-dim); text-transform: uppercase; }
+  .panel.amber { border-left-color: var(--amber-dim); }
+  .panel.amber::before { color: var(--amber-dim); }
+
+  blockquote { border-left: 3px solid var(--red-dim); padding: 10px 20px; margin: 16px 0; background: var(--panel); font-style: italic; color: var(--text-dim); font-size: 14px; }
+  blockquote strong { display: block; font-style: normal; font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--red-dim); letter-spacing: 2px; margin-bottom: 6px; }
+
+  .char-card { background: var(--bg2); border: 1px solid var(--border); padding: 20px 24px; margin: 12px 0; display: flex; gap: 20px; align-items: flex-start; }
+  .char-id { font-family: 'VT323', monospace; font-size: 42px; color: var(--red-dim); min-width: 60px; text-align: center; line-height: 1; padding-top: 4px; }
+  .char-name { font-family: 'Share Tech Mono', monospace; font-size: 14px; color: var(--text-bright); letter-spacing: 1px; margin-bottom: 4px; }
+  .char-role { font-size: 11px; color: var(--amber-dim); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; font-family: 'Share Tech Mono', monospace; }
+
+  .tape { background: var(--bg2); border: 1px solid var(--border); padding: 18px 22px; margin: 10px 0; font-family: 'Share Tech Mono', monospace; font-size: 13px; position: relative; }
+  .tape::after { content: '▶ PLAY'; position: absolute; right: 14px; top: 14px; font-size: 10px; color: var(--red-dim); letter-spacing: 1px; }
+  .tape-id { color: var(--red); font-size: 11px; letter-spacing: 2px; margin-bottom: 6px; }
+  .tape-noise { color: var(--text-dim); font-style: italic; font-size: 12px; margin-top: 8px; }
+
+  .dial-row { display: flex; gap: 16px; margin: 20px 0; flex-wrap: wrap; }
+  .dial { flex:1; min-width:160px; background:var(--bg2); border:1px solid var(--border); padding:16px; text-align:center; }
+  .dial-indicator { width:10px; height:10px; border-radius:50%; margin:0 auto 8px; }
+  .dial-indicator.blue { background:#2a5a9a; box-shadow:0 0 6px #2a5a9a; }
+  .dial-indicator.yellow { background:var(--amber); box-shadow:0 0 6px var(--amber); }
+  .dial-indicator.red { background:var(--red); box-shadow:0 0 6px var(--red); }
+  .dial-name { font-family:'Share Tech Mono',monospace; font-size:11px; letter-spacing:2px; color:var(--text-dim); margin-bottom:4px; }
+  .dial-label { font-family:'VT323',monospace; font-size:26px; color:var(--text-bright); }
+
+  .verdict-row { display:flex; gap:16px; margin:20px 0; }
+  .verdict { flex:1; padding:20px; text-align:center; border:1px solid; }
+  .verdict.approved { border-color:var(--green); background:rgba(58,122,42,0.06); }
+  .verdict.rejected { border-color:var(--red); background:rgba(192,57,43,0.06); }
+  .verdict-title { font-family:'VT323',monospace; font-size:34px; letter-spacing:3px; margin-bottom:8px; }
+  .verdict.approved .verdict-title { color:var(--green-bright); }
+  .verdict.rejected .verdict-title { color:var(--red); }
+  .verdict p { font-size:13px; margin:0; }
+
+  table { width:100%; border-collapse:collapse; margin:16px 0; font-size:13px; font-family:'Share Tech Mono',monospace; }
+  th { background:var(--bg2); color:var(--amber); padding:8px 12px; text-align:left; border:1px solid var(--border); letter-spacing:1px; font-size:11px; }
+  td { padding:8px 12px; border:1px solid var(--border); color:var(--text); vertical-align:top; line-height:1.5; }
+  tr:nth-child(even) td { background:rgba(255,255,255,0.02); }
+
+  .ending { border:1px solid var(--border); padding:22px 26px; margin:12px 0; position:relative; }
+  .ending-num { font-family:'VT323',monospace; font-size:54px; color:var(--red-dim); position:absolute; right:20px; top:12px; opacity:0.3; }
+  .ending-title { font-family:'VT323',monospace; font-size:30px; color:var(--amber); letter-spacing:2px; margin-bottom:4px; }
+  .ending-msg { font-family:'Share Tech Mono',monospace; font-size:11px; color:var(--text-dim); letter-spacing:2px; margin-top:12px; padding-top:10px; border-top:1px solid var(--border); }
+
+  .timeline { margin:16px 0; }
+  .timeline-row { display:flex; margin:4px 0; align-items:stretch; font-size:13px; }
+  .timeline-day { font-family:'Share Tech Mono',monospace; font-size:11px; color:var(--red); min-width:90px; padding:6px 12px 6px 0; border-right:1px solid var(--red-dim); margin-right:16px; flex-shrink:0; letter-spacing:1px; }
+  .timeline-content { padding:6px 0; color:var(--text); }
+
+  .tape-dist { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:16px 0; }
+  .tape-lot { background:var(--bg2); border:1px solid var(--border); padding:14px 16px; }
+  .tape-lot-num { font-family:'VT323',monospace; font-size:38px; color:var(--red); line-height:1; }
+  .tape-lot-name { font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--amber-dim); letter-spacing:2px; text-transform:uppercase; margin:4px 0; }
+  .tape-lot-days { font-size:12px; color:var(--text-dim); }
+
+  .divider { border:none; border-top:1px solid var(--border); margin:44px 0; position:relative; text-align:center; }
+  .divider::after { content:attr(data-text); position:absolute; top:-9px; left:50%; transform:translateX(-50%); background:var(--bg); padding:0 16px; font-family:'Share Tech Mono',monospace; font-size:10px; letter-spacing:3px; color:var(--text-dim); }
+
+  .stamp { display:inline-block; border:3px solid var(--red); color:var(--red); font-family:'VT323',monospace; font-size:28px; letter-spacing:4px; padding:4px 16px; transform:rotate(-4deg); opacity:0.8; }
+
+  .final-msg { text-align:center; padding:48px 24px; border:1px solid var(--border); margin-top:60px; background:var(--panel); }
+  .final-msg p { font-family:'Share Tech Mono',monospace; font-size:13px; color:var(--text-dim); letter-spacing:2px; line-height:2; }
+  .thump { font-family:'VT323',monospace; font-size:32px; color:var(--red-dim); letter-spacing:8px; animation:thump 2s infinite; }
+  @keyframes thump { 0%,90%{opacity:.6;transform:scale(1)} 50%{opacity:1;transform:scale(1.05)} }
+
+  @media(max-width:640px){
+    .title{font-size:64px}
+    .crt-duo,.crt-trio,.tape-dist{grid-template-columns:1fr}
+    .dial-row,.verdict-row{flex-direction:column}
+    .char-card{flex-direction:column}
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <header class="header">
+    <div class="title">REPROVADO</div>
+    <div class="title-sub">Quality Control — Bíblia do Jogo</div>
+    <div class="header-meta">
+      <span>Terror Psicológico</span>
+      <span>Simulação de Trabalho</span>
+      <span>Narrativa Surrealista</span>
+      <span>Estilo PSX</span>
+    </div>
+  </header>
+
+  <!-- HERO IMAGE -->
+  <div class="crt-wrap full">
+    <div class="crt-tv wide">
+      <div class="crt-screen">
+        <div class="crt-static"></div>
+        <img src="imgs/cabine_console.png" alt="Cabine de Triagem">
+      </div>
+      <div class="crt-label">UNIDADE 042 — CABINE DE TRIAGEM — FITA #104 TUTORIAL</div>
+    </div>
+  </div>
+
+  <!-- ══ 00 CONCEITO ══ -->
+  <div class="section">
+    <div class="section-label">00 — Conceito</div>
+    <h2>O Peso do Carimbo</h2>
+
+    <p>"Controle de Qualidade" é solo fértil para o terror porque mexe com a única coisa que realmente nos pertence: <strong>a nossa história</strong>. No estilo da Critical Reflex, o jogo não é sobre o "mundo lá fora" — é sobre a cabine fechada onde você trabalha e o peso do carimbo na sua mão.</p>
+
+    <div class="panel" data-label="Inspirações">
+      <p><strong>Mouthwashing · Silent Hill 2 · Papers, Please</strong></p>
+      <p style="margin:0;color:var(--text-dim);font-size:13px;">Um protagonista que começa como coitado e termina como monstro. Um sistema que só existe porque alguém continua apertando o botão.</p>
+    </div>
+
+    <blockquote>
+      <strong>Mensagem dos Devs</strong>
+      "A limpeza é um processo doloroso. Obrigado por manter nossos registros impecáveis."
+    </blockquote>
+
+    <div class="crt-duo">
+      <div class="crt-tv">
+        <div class="crt-screen green-tint">
+          <div class="crt-static"></div>
+          <img src="imgs/maos_fita.png" alt="Mãos de Elias com a fita">
+        </div>
+        <div class="crt-label">POV — ELIAS — DIA 01</div>
+      </div>
+      <div class="crt-tv">
+        <div class="crt-screen amber-tint">
+          <div class="crt-static"></div>
+          <img src="imgs/fitas_aprovado.png" alt="Fitas aprovado/reprovado">
+        </div>
+        <div class="crt-label">PRODUTO LETHE — APROVADO / SONHO / LIBERDADE</div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider" data-text="ARQUIVO 01">
+
+  <!-- ══ 01 MUNDO ══ -->
+  <div class="section">
+    <div class="section-label">01 — Worldbuilding</div>
+    <h2>Obolus</h2>
+
+    <p>Uma metrópole vertical onde o sol não toca o solo há 50 anos. Não existe "país" — existe apenas a <strong>Lethe Corp.</strong> e suas subsidiárias. A economia não gira em torno de dinheiro, mas de <strong>Nostalgia</strong>.</p>
+
+    <div class="crt-wrap full">
+      <div class="crt-tv wide">
+        <div class="crt-screen amber-tint">
+          <div class="crt-static"></div>
+          <img src="imgs/obolus_cidade.png" alt="Cidade de Obolus">
+        </div>
+        <div class="crt-label">OBOLUS — NÍVEL MÉDIO — CÂMERA DE VIGILÂNCIA LC-09</div>
+      </div>
+    </div>
+
+    <div class="crt-duo">
+      <div class="crt-tv">
+        <div class="crt-screen amber-tint">
+          <div class="crt-static"></div>
+          <img src="imgs/pantano_cidade.png" alt="O Pântano">
+        </div>
+        <div class="crt-label">O PÂNTANO — NÍVEL ZERO</div>
+      </div>
+      <div class="crt-tv">
+        <div class="crt-screen">
+          <div class="crt-static"></div>
+          <img src="imgs/torre_lethe.png" alt="Torre Lethe Corp">
+        </div>
+        <div class="crt-label">TORRE LETHE CORP — SEDE CENTRAL</div>
+      </div>
+    </div>
+
+    <h3>As Classes Sociais — A Pirâmide da Nostalgia</h3>
+
+    <div class="char-card">
+      <div class="char-id">Ⅰ</div>
+      <div>
+        <div class="char-name">OS ÁUREOS</div>
+        <div class="char-role">Elite Compradora — Acima das Nuvens</div>
+        <p>Fisicamente perfeitos, mentalmente mortos. Sofrem de <strong>Anedonia Terminal</strong>. São viciados em injetar memórias de pobres para sentir a química cerebral alheia por 30 segundos. São bibliotecas de vidas roubadas.</p>
+      </div>
+    </div>
+
+    <div class="crt-duo">
+      <div class="crt-tv">
+        <div class="crt-screen">
+          <div class="crt-static"></div>
+          <img src="imgs/aureo_verde.png" alt="Áureo consumindo">
+        </div>
+        <div class="crt-label">ÁUREO — CONSUMO ATIVO — FITA APROVADA</div>
+      </div>
+      <div class="crt-tv">
+        <div class="crt-screen">
+          <div class="crt-static"></div>
+          <img src="imgs/aureo_vermelho.png" alt="Áureo em estado passivo">
+        </div>
+        <div class="crt-label">ÁUREO — ESTADO PASSIVO — AGUARDANDO FITA</div>
+      </div>
+    </div>
+
+    <div class="char-card">
+      <div class="char-id">Ⅱ</div>
+      <div>
+        <div class="char-name">A MEDULA</div>
+        <div class="char-role">Classe Técnica — Andares Intermediários</div>
+        <p>Técnicos como Elias. Vivem em uma <strong>felicidade performática</strong> — a empresa os obriga a produzir memórias felizes para vender. Paranoia constante: se você parar de ser feliz, sua dívida sobe.</p>
+      </div>
+    </div>
+
+    <div class="char-card">
+      <div class="char-id">Ⅲ</div>
+      <div>
+        <div class="char-name">OS OCOS / VAZIOS</div>
+        <div class="char-role">Subclasse — O Pântano (Nível Térreo)</div>
+        <p>Pessoas que venderam tanto que esqueceram seus próprios nomes. Suas memórias são "sujas" (fome, dor) e têm taxa de REPROVADO altíssima — elas perdem a memória <em>e</em> não recebem o pagamento.</p>
+      </div>
+    </div>
+
+    <div class="crt-wrap full">
+      <div class="crt-tv wide">
+        <div class="crt-screen amber-tint">
+          <div class="crt-static"></div>
+          <img src="imgs/ocos_corredor.png" alt="Os Ocos nos corredores">
+        </div>
+        <div class="crt-label">OS OCOS — CORREDOR DE MANUTENÇÃO — CÂMERA NÍVEL 2</div>
+      </div>
+    </div>
+
+    <h3>A Dívida de Berço</h3>
+    <p>Ninguém nasce livre. O custo do parto e do oxigênio é contabilizado desde o primeiro segundo. Trabalhar paga os juros — nunca o montante. A única saída é a <strong>Sifonagem Neural</strong>: vender pedaços da sua história.</p>
+
+    <div class="panel amber" data-label="O Golpe">
+      <p>O doador <strong>pega empréstimo para viver uma experiência</strong>, depois <strong>vende a memória dessa experiência</strong> para pagar o empréstimo — e fica com 90% da dívida original. Trabalhou apenas para alugar um momento de felicidade que agora pertence a um rico.</p>
+    </div>
+  </div>
+
+  <hr class="divider" data-text="ARQUIVO 02">
+
+  <!-- ══ 02 TECNOLOGIA ══ -->
+  <div class="section">
+    <div class="section-label">02 — Lore & Tecnologia</div>
+    <h2>O Mercado de Almas</h2>
+
+    <h3>A Extração — Sifonagem Neural</h3>
+    <p>A memória não é copiada — é <strong>arrancada</strong>. Agulhas magnéticas perfuram o córtex e removem a conexão sináptica. No lugar sobra apenas um <strong>Espaço Morto</strong> — a sensação de que algo existia ali, mas agora é só estática mental.</p>
+
+    <div class="crt-duo">
+      <div class="crt-tv">
+        <div class="crt-screen green-tint">
+          <div class="crt-static"></div>
+          <img src="imgs/cadeira_extracao.png" alt="Cadeira de extração">
+        </div>
+        <div class="crt-label">PROTOCOLO DE EXTRAÇÃO #104</div>
+      </div>
+      <div class="crt-tv">
+        <div class="crt-screen">
+          <div class="crt-static"></div>
+          <img src="imgs/extracao_maquina.png" alt="Máquina SIP-001-E">
+        </div>
+        <div class="crt-label">SIP-001-E — SIFONAGEM INDUSTRIAL</div>
+      </div>
+    </div>
+
+    <h3>O Veredito</h3>
+    <div class="verdict-row">
+      <div class="verdict approved">
+        <div class="verdict-title">✓ APROVADO</div>
+        <p>Fita polida e vendida. Doador recebe o pagamento. A memória some para sempre.</p>
+      </div>
+      <div class="verdict rejected">
+        <div class="verdict-title">✗ REPROVADO</div>
+        <p>Fita triturada. Doador <strong>não recebe nada</strong>. Perdeu a memória e continua na miséria.</p>
+      </div>
+    </div>
+
+    <div class="panel" data-label="O Horror do Reprovado">
+      <p>A Lethe Corp. prefere destruir uma fita a vender uma memória "suja". Para a empresa, a dor do pobre é um <strong>defeito de fabricação</strong>.</p>
+    </div>
+  </div>
+
+  <hr class="divider" data-text="ARQUIVO 03">
+
+  <!-- ══ 03 PROTAGONISTA ══ -->
+  <div class="section">
+    <div class="section-label">03 — Protagonista</div>
+    <h2>Elias — Unidade 042</h2>
+
+    <p>Um homem que não lembra do próprio rosto. Trabalha para a Lethe Corp. para pagar uma "Dívida de Vida". Acredita que é um herói trágico: está ali destruindo memórias alheias para recuperar a sua própria.</p>
+
+    <div class="crt-wrap full">
+      <div class="crt-tv wide">
+        <div class="crt-screen green-tint">
+          <div class="crt-static"></div>
+          <img src="imgs/elias_deteriorado.png" alt="Elias deteriorado">
+        </div>
+        <div class="crt-label">ELIAS — UNIDADE 042 — DIA 28 — ESTADO CRÍTICO</div>
+      </div>
+    </div>
+
+    <div class="panel" data-label="O Plot Twist Central">
+      <p>Elias não vendeu memórias para salvar Clara. <strong>Ele vendeu a memória de Clara porque não aguentava mais o peso de cuidar de alguém doente.</strong></p>
+      <p style="margin:0;margin-top:10px;"><strong>A Verdade Mais Profunda:</strong> Clara era uma colega de trabalho que Elias <em>denunciou</em> à Lethe Corp. para roubar a vaga dela. Comprou uma Fita Quimérica onde é o "namorado herói" apenas para conseguir dormir à noite.</p>
+    </div>
+
+    <blockquote>
+      <strong>Gerente Thorne — Interfone</strong>
+      "Você não é uma vítima, Elias. Você é o nosso melhor funcionário porque você adora apagar o que te incomoda."
+    </blockquote>
+  </div>
+
+  <hr class="divider" data-text="ARQUIVO 04">
+
+  <!-- ══ 04 ELENCO ══ -->
+  <div class="section">
+    <div class="section-label">04 — Elenco</div>
+    <h2>Os Personagens</h2>
+
+    <div class="char-card">
+      <div class="char-id">T</div>
+      <div>
+        <div class="char-name">GERENTE THORNE</div>
+        <div class="char-role">A Voz do Sistema — Nunca visto fisicamente</div>
+        <p>Apenas monitor CRT borrado ou interfone. Fala como se estivesse em reunião de negócios, mesmo ao ordenar a destruição de uma vida. <strong>Segredo:</strong> Não tem memórias próprias há décadas. É o que o Elias se tornará.</p>
+      </div>
+    </div>
+
+    <div class="crt-wrap">
+      <div class="crt-tv medium">
+        <div class="crt-screen green-tint">
+          <div class="crt-static"></div>
+          <img src="imgs/thorne_monitor.png" alt="Gerente Thorne">
+        </div>
+        <div class="crt-label">GERENTE THORNE — TRANSMISSÃO INTERNA</div>
+      </div>
+    </div>
+
+    <div class="char-card">
+      <div class="char-id">S</div>
+      <div>
+        <div class="char-name">SILAS</div>
+        <div class="char-role">Técnico da Cabine ao Lado — O Daisuke</div>
+        <p>Jovem, otimista, ingênuo. Acredita que a Lethe Corp. está "limpando o mundo da tristeza". <strong>O Choque:</strong> comete um erro e é arrastado pelos seguranças. No dia seguinte, o Elias recebe uma fita: <em>são as memórias da família do Silas.</em></p>
+      </div>
+    </div>
+
+    <div class="crt-wrap">
+      <div class="crt-tv medium">
+        <div class="crt-screen">
+          <div class="crt-static"></div>
+          <img src="imgs/silas_familia.png" alt="Silas">
+        </div>
+        <div class="crt-label">SILAS — ÚLTIMA IMAGEM REGISTRADA — DIA 12</div>
+      </div>
+    </div>
+
+    <div class="char-card">
+      <div class="char-id">V</div>
+      <div>
+        <div class="char-name">V</div>
+        <div class="char-role">Suturadora / Hacker — A Tentação</div>
+        <p>Frequências de rádio piratas. Cínica, fuma constantemente. Planta a dúvida sobre Clara. É o caminho para o Final Sutura.</p>
+      </div>
+    </div>
+
+    <div class="crt-wrap full">
+      <div class="crt-tv wide">
+        <div class="crt-screen green-tint">
+          <div class="crt-static"></div>
+          <img src="imgs/suturador_freq.png" alt="O Suturador">
+        </div>
+        <div class="crt-label">O SUTURADOR — FREQUÊNCIA PIRATA 99.1 FM — TRANSMISSÃO INSTÁVEL</div>
+      </div>
+    </div>
+
+    <div class="char-card">
+      <div class="char-id">001</div>
+      <div>
+        <div class="char-name">A VELHA DO ELEVADOR — UNIDADE 001</div>
+        <div class="char-role">A Oca dos Corredores — O Espelho do Destino</div>
+        <p>Não fala. Apenas murmura melodias. É o lembrete constante do destino de todos. Mais tarde: <em>foi a fundadora da Lethe Corp.</em>, descartada assim que envelheceu.</p>
+      </div>
+    </div>
+
+    <div class="crt-wrap">
+      <div class="crt-tv medium">
+        <div class="crt-screen amber-tint">
+          <div class="crt-static"></div>
+          <img src="imgs/velha_elevador.png" alt="A Velha do Elevador">
+        </div>
+        <div class="crt-label">UNIDADE 001 — CORREDOR DE SERVIÇO — NÍVEL 4</div>
+      </div>
+    </div>
+
+    <div class="char-card">
+      <div class="char-id">C</div>
+      <div>
+        <div class="char-name">CLARA</div>
+        <div class="char-role">A Memória — A Vítima Real</div>
+        <p>Jamais aparece diretamente. Existe apenas como voz nas fitas. Virou uma "Vazia" porque o Controle de Qualidade destruiu suas fitas sem nunca pagá-la.</p>
+      </div>
+    </div>
+
+    <div class="crt-wrap">
+      <div class="crt-tv medium">
+        <div class="crt-screen">
+          <div class="crt-static"></div>
+          <img src="imgs/clara_monitor.png" alt="Clara no monitor">
+        </div>
+        <div class="crt-label">MEM-ACQ: CLARA — ARQUIVO CORROMPIDO</div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider" data-text="ARQUIVO 05">
+
+  <!-- ══ 05 GAMEPLAY ══ -->
+  <div class="section">
+    <div class="section-label">05 — Gameplay</div>
+    <h2>O Console de Triagem</h2>
+
+    <p>Preso em uma cabine claustrofóbica de metal, o jogador opera uma máquina analógica pesada em primeira pessoa. O objetivo é <strong>esculpir a mentira</strong>: limpar a dor de uma memória até que ela seja vendável para um Áureo.</p>
+
+    <div class="crt-duo">
+      <div class="crt-tv">
+        <div class="crt-screen green-tint">
+          <div class="crt-static"></div>
+          <img src="imgs/console_psx.png" alt="Console PSX">
+        </div>
+        <div class="crt-label">INTERFACE — VISÃO DO JOGADOR</div>
+      </div>
+      <div class="crt-tv">
+        <div class="crt-screen green-tint">
+          <div class="crt-static"></div>
+          <img src="imgs/interface_creditos.png" alt="Interface de créditos">
+        </div>
+        <div class="crt-label">SISTEMA DE AQUISIÇÃO — CRÉDITOS / FITA</div>
+      </div>
+    </div>
+
+    <h3>Os Três Seletores</h3>
+    <div class="dial-row">
+      <div class="dial">
+        <div class="dial-indicator blue"></div>
+        <div class="dial-name">SATUR.</div>
+        <div class="dial-label">Alegria</div>
+        <p style="font-size:12px;margin:6px 0 0;color:var(--text-dim);">Aumenta o brilho emocional. Distorce se excessivo.</p>
+      </div>
+      <div class="dial">
+        <div class="dial-indicator yellow"></div>
+        <div class="dial-name">FREQ.</div>
+        <div class="dial-label">Contexto</div>
+        <p style="font-size:12px;margin:6px 0 0;color:var(--text-dim);">Remove ruídos de fundo e vozes de terceiros.</p>
+      </div>
+      <div class="dial">
+        <div class="dial-indicator red"></div>
+        <div class="dial-name">ESTAB.</div>
+        <div class="dial-label">Dor</div>
+        <p style="font-size:12px;margin:6px 0 0;color:var(--text-dim);">Suprime gritos e tremores. O botão está rachado.</p>
+      </div>
+    </div>
+
+    <div class="panel" data-label="O Desconforto Central">
+      <p>O jogo te obriga a <strong>olhar para o que você está destruindo</strong> para terminar o ajuste. Quanto mais você "limpa" a dor, mais o rosto da pessoa sofrendo fica nítido no monitor. Você é cúmplice ativo.</p>
+    </div>
+
+    <h3>Progressão — Degradação da Cabine</h3>
+    <div class="timeline">
+      <div class="timeline-row">
+        <div class="timeline-day">DIAS 1–3</div>
+        <div class="timeline-content">Memórias simples, interface limpa. O trabalho é quase relaxante.</div>
+      </div>
+      <div class="timeline-row">
+        <div class="timeline-day">DIAS 4–7</div>
+        <div class="timeline-content">Fitas chegam sujas de óleo preto. Os seletores queimam os dedos (tela pisca em vermelho).</div>
+      </div>
+      <div class="timeline-row">
+        <div class="timeline-day">DIAS 8–10</div>
+        <div class="timeline-content">Fitas já carimbadas ainda gritam no triturador. O jogo te obriga a tirar e re-processar.</div>
+      </div>
+    </div>
+
+    <div class="crt-wrap full">
+      <div class="crt-tv wide">
+        <div class="crt-screen amber-tint">
+          <div class="crt-static"></div>
+          <img src="imgs/corredor_triagem.png" alt="Corredor Triagem A-1">
+        </div>
+        <div class="crt-label">CORREDOR TRIAGEM A-1 — NÍVEL 4 — CÂMERA DE SEGURANÇA</div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider" data-text="ARQUIVO 06">
+
+  <!-- ══ 06 AS 33 FITAS ══ -->
+  <div class="section">
+    <div class="section-label">06 — Estrutura de Conteúdo</div>
+    <h2>33 Fitas</h2>
+
+    <p>33 fitas ao longo de 30 dias de contrato. Com esse número, o jogador memoriza os nomes dos doadores — quando encontra uma fita de alguém que reprovou antes e esse doador agora aparece como "Oco" em outra fita, o impacto é devastador.</p>
+
+    <div class="tape-dist">
+      <div class="tape-lot">
+        <div class="tape-lot-num">10</div>
+        <div class="tape-lot-name">A Engrenagem</div>
+        <div class="tape-lot-days">Dias 1–7</div>
+        <p style="font-size:12px;margin-top:6px;color:var(--text-dim);">Memórias mundanas. O jogador aprende a ignorar os "ruídos" e se sente eficiente.</p>
+      </div>
+      <div class="tape-lot">
+        <div class="tape-lot-num">10</div>
+        <div class="tape-lot-name">O Sangue no Sistema</div>
+        <div class="tape-lot-days">Dias 8–18</div>
+        <p style="font-size:12px;margin-top:6px;color:var(--text-dim);">Fitas "sujas". Memórias de conhecidos do Elias. O lucro começa a custar humanidade.</p>
+      </div>
+      <div class="tape-lot">
+        <div class="tape-lot-num">5</div>
+        <div class="tape-lot-name">A Costura</div>
+        <div class="tape-lot-days">Dias 10–25</div>
+        <p style="font-size:12px;margin-top:6px;color:var(--text-dim);">Fitas dos Suturadores. Muito dinheiro, muita Dissonância Neural.</p>
+      </div>
+      <div class="tape-lot">
+        <div class="tape-lot-num">5</div>
+        <div class="tape-lot-name">Clara</div>
+        <div class="tape-lot-days">Dias 15–29</div>
+        <p style="font-size:12px;margin-top:6px;color:var(--text-dim);">A "história de amor" — cada fita é um capítulo do romance que Elias acredita ter vivido.</p>
+      </div>
+      <div class="tape-lot">
+        <div class="tape-lot-num">3</div>
+        <div class="tape-lot-name">O Espelho Morto</div>
+        <div class="tape-lot-days">Dia 30</div>
+        <p style="font-size:12px;margin-top:6px;color:var(--text-dim);">Fitas 31, 32 e 33: a denúncia, a compra da fita falsa, o Elias no presente.</p>
+      </div>
+    </div>
+
+    <h3>Scripts de Fitas</h3>
+
+    <div class="tape">
+      <div class="tape-id">FITA #104 — "O Presente de Aniversário" · Classe: Oco · Tutorial</div>
+      <div class="tape-content">
+        <strong>Pai:</strong> "Olha só, Alice... é de verdade. Um doce de verdade."<br>
+        <strong>Criança:</strong> (risada pura, papel rasgando) "É azul! Pai, ele brilha!"
+      </div>
+      <div class="tape-noise">[RUÍDO A FILTRAR]: tosse seca pesada / botas batendo na porta / "Lethe Corp! Despejo imediato!" / estômagos roncando</div>
+    </div>
+
+    <div class="tape">
+      <div class="tape-id">FITA #000-S — "Fragmento Silas" · Ex-Medula</div>
+      <div class="tape-content">
+        <strong>Silas:</strong> "Eu vi o Elias hoje. Ele parece cansado... mas ele é um bom homem. Ele vai me ajudar se algo der errado."
+      </div>
+      <div class="tape-noise">[RUÍDO A FILTRAR]: agulhas de extração zumbindo / Silas gritando de dor / Thorne: "Pode puxar. Ele não vai precisar mais dessas lembranças."<br><em>Se você filtrar o grito, mata o Silas para sempre. Se reprovar, perde o bônus de comida do dia.</em></div>
+    </div>
+
+    <div class="tape">
+      <div class="tape-id">FITA #CLARA-X — "A Costura" · Quimérica / Hackeada</div>
+      <div class="tape-content">
+        <strong>Clara:</strong> "Elias, olha para mim. Eu te amo porque você me salvou."
+      </div>
+      <div class="tape-noise">[RUÍDO QUE ELIAS TENTA ESCONDER]: Clara gritando "Por que você está fazendo isso?! Não assina esse formulário de denúncia! ELIAS!" / som de carimbo cobrindo os beijos da memória falsa.<br><em>O seletor de Estabilidade quebra. O rosto da Clara é uma colagem de mulheres diferentes.</em></div>
+    </div>
+
+    <h3>Diálogos do Interfone</h3>
+    <blockquote>
+      <strong>Thorne — Dia 1</strong>
+      "Bom dia, 042. O sol não saiu hoje de novo, mas as metas sim. Lembre-se: você não está apagando vidas, está polindo diamantes."
+    </blockquote>
+    <blockquote>
+      <strong>Thorne — Após Silas Sumir</strong>
+      "O Silas? Foi promovido para o setor de 'Doação Integral'. Uma honra. Espero que você tenha a mesma dedicação... ou o mesmo destino."
+    </blockquote>
+    <blockquote>
+      <strong>Thorne — Final do Jogo</strong>
+      "Você é o único técnico que continua filtrando a própria culpa mesmo quando a máquina já quebrou. O carimbo é seu deus agora."
+    </blockquote>
+  </div>
+
+  <hr class="divider" data-text="ARQUIVO 07">
+
+  <!-- ══ 07 NARRATIVA ══ -->
+  <div class="section">
+    <div class="section-label">07 — Estrutura Narrativa</div>
+    <h2>A Jornada do Elias</h2>
+
+    <h3>Ato 1 — A Banalidade do Mal (Dias 1–7)</h3>
+    <p>O trabalho é quase relaxante. A Pílula Azul faz Elias esquecer o horror que ouviu no turno. Uma voz de mulher chora numa fita; o botão de Dor trava no máximo. Thorne: <em>"Ignore. Carimbe e limpe o paladar."</em></p>
+
+    <h3>Ato 2 — A Estática na Realidade (Dias 8–18)</h3>
+    <p>O tempo quebra. Corredores infinitos, vultos de Clara que viram pilhas de fitas ao se aproximar. A cabine começa a sangrar tinta.</p>
+
+    <h3>Ato 3 — A Omissão (Dias 19–25)</h3>
+    <p>Elias percebe que quanto mais "limpa" as memórias de Clara para clientes ricos, mais ela vira uma casca. Ele encontra a fita confidencial: Clara descrevendo o momento em que percebeu que Elias a esqueceu.</p>
+
+    <h3>Clímax — O Espelho de Carne (Dias 26–29)</h3>
+    <p>As paredes de aço dão lugar a paredes de tecido cicatrizado. O deck de fitas pulsa como um coração. Elias coloca a fita da memória comprada dos Suturadores e descobre a verdade sobre si mesmo.</p>
+
+    <div class="panel" data-label="A Revelação">
+      <p>Elias não vendeu a memória para salvar Clara. Ele vendeu a memória <em>de</em> Clara para fugir da responsabilidade. Pior: a memória de amor foi comprada dos Suturadores para que ele pudesse se sentir herói do próprio crime.</p>
+    </div>
+  </div>
+
+  <hr class="divider" data-text="ARQUIVO 08">
+
+  <!-- ══ 08 FINAIS ══ -->
+  <div class="section">
+    <div class="section-label">08 — Finais</div>
+    <h2>O Dia 30</h2>
+
+    <div class="ending">
+      <div class="ending-num">01</div>
+      <div class="ending-title">Funcionário do Mês</div>
+      <p>Elias descobre que a memória da Clara é falsa — e não se importa. Aceita o cargo de Thorne. Passa a eternidade carimbando fitas sem nem ouvir o áudio.</p>
+      <div class="ending-msg">MENSAGEM: "A ordem exige o sacrifício da verdade."</div>
+    </div>
+
+    <div class="ending">
+      <div class="ending-num">02</div>
+      <div class="ending-title">Oco</div>
+      <p>Elias tenta ser "bom" de forma frouxa. A Lethe Corp. o demite. Como deve Créditos de Berço, é arrastado para a cadeira de extração. Ele vira um Vazio no Pântano — encontra uma fita com seu nome no lixo e ouve apenas estática.</p>
+      <div class="ending-msg">MENSAGEM: "Algumas dívidas só podem ser pagas com o que resta de você."</div>
+    </div>
+
+    <div class="ending">
+      <div class="ending-num">03</div>
+      <div class="ending-title">Sutura Humana</div>
+      <p>Elias injeta tantas memórias falsas que seu cérebro "rasga". No monitor CRT, seu rosto começa a piscar e trocar pelos rostos de todos que ele carimbou durante o jogo.</p>
+      <div class="ending-msg">MENSAGEM: "Se a sua vida é uma mentira, por que não escolher uma mais bonita?"</div>
+    </div>
+  </div>
+
+  <hr class="divider" data-text="ARQUIVO 09">
+
+  <!-- ══ 09 ESTÉTICA ══ -->
+  <div class="section">
+    <div class="section-label">09 — Estética & Concept Art</div>
+    <h2>Concept Art</h2>
+
+    <div class="crt-trio">
+      <div class="crt-tv">
+        <div class="crt-screen amber-tint">
+          <div class="crt-static"></div>
+          <img src="imgs/pantano_cidade.png" alt="O Pântano">
+        </div>
+        <div class="crt-label">O PÂNTANO</div>
+      </div>
+      <div class="crt-tv">
+        <div class="crt-screen green-tint">
+          <div class="crt-static"></div>
+          <img src="imgs/corredor_triagem.png" alt="Corredor">
+        </div>
+        <div class="crt-label">CORREDOR A-1</div>
+      </div>
+      <div class="crt-tv">
+        <div class="crt-screen amber-tint">
+          <div class="crt-static"></div>
+          <img src="imgs/ocos_corredor.png" alt="Os Ocos">
+        </div>
+        <div class="crt-label">OS OCOS</div>
+      </div>
+    </div>
+
+    <div class="crt-wrap full">
+      <div class="crt-tv wide">
+        <div class="crt-screen">
+          <div class="crt-static"></div>
+          <img src="imgs/obolus_cidade.png" alt="Obolus panorâmica">
+        </div>
+        <div class="crt-label">OBOLUS — VISÃO PANORÂMICA — CÂMERA LC-01</div>
+      </div>
+    </div>
+
+    <h3>Itens de Decoração — O Espelho da Culpa</h3>
+    <table>
+      <thead><tr><th>Item</th><th>Função Superficial</th><th>Horror Real</th></tr></thead>
+      <tbody>
+        <tr><td>Planta de Plástico "Eterna"</td><td>Conforto visual</td><td>Acumula poeira cinza que não pode ser limpa.</td></tr>
+        <tr><td>Porta-Retrato Glitch</td><td>Foto da Clara</td><td>O rosto muda levemente toda vez. Loira num dia, morena no outro.</td></tr>
+        <tr><td>Placa "Funcionário do Mês"</td><td>Autoestima</td><td>No final, a foto muda para o rosto de uma das vítimas.</td></tr>
+        <tr><td>Rádio de Pilha</td><td>Distração</td><td>Às vezes capta frequências de fitas já trituradas.</td></tr>
+        <tr><td>Caixinha de Música</td><td>Memória da Clara</td><td>Vai desafinando conforme Elias descobre a verdade.</td></tr>
+        <tr><td>Gato da Sorte Enferrujado</td><td>Boa sorte</td><td>Se você colaborar com os Suturadores, começa a acenar com um braço humano.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <hr class="divider" data-text="ARQUIVO 10">
+
+  <!-- ══ 10 CRÍTICA ══ -->
+  <div class="section">
+    <div class="section-label">10 — Crítica & Simbolismo</div>
+    <h2>Por que Isso Dói</h2>
+
+    <table>
+      <thead><tr><th>Elemento</th><th>Mouthwashing</th><th>REPROVADO</th></tr></thead>
+      <tbody>
+        <tr><td>O Gatilho</td><td>Jimmy (Ego / Covardia)</td><td>Elias (Ego / Dívida)</td></tr>
+        <tr><td>O Facilitador</td><td>Curly (Omissão / Lealdade)</td><td>Elias (Omissão / Sobrevivência)</td></tr>
+        <tr><td>A Vítima</td><td>Anya (Corpo / Trauma)</td><td>Clara (Identidade / Memória)</td></tr>
+        <tr><td>O Sistema</td><td>Pony Express (Lucro)</td><td>Lethe Corp. (Identidade como moeda)</td></tr>
+        <tr><td>A Metáfora</td><td>Enxaguante (Anestesiar)</td><td>Filtro / Carimbo (Apagar a verdade)</td></tr>
+      </tbody>
+    </table>
+
+    <div class="panel" data-label="A Moral Final">
+      <p>A Lethe Corp. só existe porque existem milhões de "Eliases" dispostos a carimbar a fita de alguém em troca de um minuto de paz. O jogador começa achando que Elias é um coitado. O jogador termina sentindo <strong>nojo</strong> dele — e de si mesmo.</p>
+    </div>
+
+    <div class="crt-duo">
+      <div class="crt-tv">
+        <div class="crt-screen amber-tint">
+          <div class="crt-static"></div>
+          <img src="imgs/aureo_verde.png" alt="Os vampiros emocionais">
+        </div>
+        <div class="crt-label">OS VAMPIROS EMOCIONAIS</div>
+      </div>
+      <div class="crt-tv">
+        <div class="crt-screen">
+          <div class="crt-static"></div>
+          <img src="imgs/velha_elevador.png" alt="O destino final">
+        </div>
+        <div class="crt-label">O DESTINO FINAL DE TODOS</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FINAL -->
+  <div class="final-msg">
+    <div class="stamp">REPROVADO</div>
+    <p style="margin-top:28px;">
+      A limpeza é um processo doloroso.<br>
+      Obrigado por manter nossos registros impecáveis.
+    </p>
+    <p class="thump" style="margin-top:20px;">THUMP . . . THUMP . . . THUMP</p>
+    <p style="margin-top:24px;font-size:11px;">
+      LETHE CORP. · DOCUMENTO INTERNO · UNIDADE 042 · TURNO ENCERRADO
+    </p>
+  </div>
+
+</div>
+</body>
+</html>
